@@ -1,9 +1,9 @@
 import os
 import unittest
 
-from WiiIsoReader import WiiIsoReader
-from structs.DiscHeader import DiscHeader
-from file_system_table.FSTNode import FSTDirectory
+from wiithon.WiiIsoReader import WiiIsoReader
+from wiithon.structs.DiscHeader import DiscHeader
+from wiithon.file_system_table.FSTNode import FSTDirectory
 
 TEST_ISO_PATH = os.path.join(os.path.dirname(__file__), "..", "assets", "smg.iso")
 

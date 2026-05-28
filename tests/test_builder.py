@@ -3,12 +3,12 @@ import unittest
 from io import BytesIO
 from unittest.mock import MagicMock
 
-from builder.CopyBuilder import CopyBuilder
-from builder.WiiDiscBuilder import WiiDiscBuilder, _align_up, _pad_to
-from crypto.CryptPartWriter import CryptPartWriter
-from file_system_table.FSTNode import FSTDirectory, FSTFile
-from structs.DiscHeader import DiscHeader
-from structs.WiiPartitionEntry import WiiPartitionEntry
+from wiithon.builder.CopyBuilder import CopyBuilder
+from wiithon.builder.WiiDiscBuilder import WiiDiscBuilder, _align_up, _pad_to
+from wiithon.crypto.CryptPartWriter import CryptPartWriter
+from wiithon.file_system_table.FSTNode import FSTDirectory, FSTFile
+from wiithon.structs.DiscHeader import DiscHeader
+from wiithon.structs.WiiPartitionEntry import WiiPartitionEntry
 
 def _fake_fst_entries():
     """

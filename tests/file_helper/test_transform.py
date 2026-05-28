@@ -6,10 +6,10 @@ from unittest.mock import MagicMock
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from file_helper.rarc import Rarc, RarcNode, RarcFileEntry
-from file_helper.yaz0 import Yaz0
-from file_helper.transforms import yaz0_transform, rarc_transform, auto_yaz0_transform
-from WiiIsoPatcher import WiiIsoPatcher
+from wiithon.file_helper.rarc import Rarc, RarcNode, RarcFileEntry
+from wiithon.file_helper.yaz0 import Yaz0
+from wiithon.file_helper.transforms import yaz0_transform, rarc_transform, auto_yaz0_transform
+from wiithon.WiiIsoPatcher import WiiIsoPatcher
 
 # May need to break this file into smaller ones
 

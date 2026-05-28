@@ -1,4 +1,4 @@
-from WiiIsoReader import WiiIsoReader
+from wiithon.WiiIsoReader import WiiIsoReader
 
 def main():
     # Opening the iso with WiiIsoReader

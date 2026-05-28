@@ -26,8 +26,9 @@ The library is divided into two main components: reading existing ISOs and build
 
 To read an ISO, initialize the `WiiIsoReader` with a binary stream. You can iterate through the partitions and access the decrypted file data using the FST offsets.
 (currently just copied/paste the examples in the above directory)
+
 ```python
-from WiiIsoReader import WiiIsoReader
+from wiithon.WiiIsoReader import WiiIsoReader
 
 # Opening the ISO
 with WiiIsoReader("your_iso_file.iso") as reader:
@@ -47,12 +48,12 @@ To build an ISO, you can use some interfaces. Each interface has their specifici
 Currently, only the copy one exists.
 
 ```python
-from builder.CopyBuilder import CopyBuilder
-from WiiIsoReader import WiiIsoReader
-from builder.WiiDiscBuilder import WiiDiscBuilder
+from wiithon.builder.CopyBuilder import CopyBuilder
+from wiithon.WiiIsoReader import WiiIsoReader
+from wiithon.builder.WiiDiscBuilder import WiiDiscBuilder
 
 SOURCE_PATH = "your_iso_file.iso"
-DEST_PATH   = "output_iso.iso"
+DEST_PATH = "output_iso.iso"
 
 print(f"Source : {SOURCE_PATH}")
 print(f"Dest   : {DEST_PATH}")

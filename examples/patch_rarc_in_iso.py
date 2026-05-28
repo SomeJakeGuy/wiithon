@@ -3,9 +3,9 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from WiiIsoPatcher import WiiIsoPatcher
-from file_helper.transforms import auto_yaz0_transform, rarc_transform
-from file_helper.rarc import Rarc
+from wiithon.WiiIsoPatcher import WiiIsoPatcher
+from wiithon.file_helper.transforms import auto_yaz0_transform, rarc_transform
+from wiithon.file_helper.rarc import Rarc
 
 SRC_ISO = "../assets/smg.iso"
 DST_ISO = "../assets/smg_patched.iso"

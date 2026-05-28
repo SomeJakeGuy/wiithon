@@ -1,5 +1,5 @@
 import os
-from file_helper.rarc import Rarc
+from wiithon.file_helper.rarc import Rarc
 
 def main():
     input_file = "../assets/AstroDomeScenario.arc"

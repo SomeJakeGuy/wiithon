@@ -1,9 +1,9 @@
 import unittest
 from io import BytesIO
 
-from file_system_table.FST import FST
-from file_system_table.FSTNode import FSTFile, FSTDirectory
-from file_system_table.FSTToBytes import FSTToBytes
+from wiithon.file_system_table.FST import FST
+from wiithon.file_system_table.FSTNode import FSTFile, FSTDirectory
+from wiithon.file_system_table.FSTToBytes import FSTToBytes
 
 
 def _make_fst() -> FST:

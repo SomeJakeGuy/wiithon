@@ -1,6 +1,6 @@
 import unittest
 from io import BytesIO
-from helpers.IOWindow import IOWindow
+from wiithon.helpers.IOWindow import IOWindow
 
 
 class TestIOWindow(unittest.TestCase):

@@ -2,8 +2,8 @@ import struct
 import unittest
 from io import BytesIO
 
-from structs.TMD import TMD
-from helpers.Enums import SignatureType
+from wiithon.structs.TMD import TMD
+from wiithon.helpers.Enums import SignatureType
 
 class TestTMD(unittest.TestCase):
     """Unit tests for TMD."""

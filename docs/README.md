@@ -38,19 +38,19 @@ Once the DATA partition is decrypted, a **second Disc Header** (internal, called
 | `0x428` | `0x04` | FST Size     | FST size                   |
 | `0x42C` | `0x04` | FST Max Size | Maximum allocated FST size |
 
-> DOL/FST offsets are stored right-shifted by 2 bits (`>> 2`). To get the actual offset, multiply by 4 (`<< 2`). This is what [`read_u64_shifted()`](../src/helpers/Utils.py).
+> DOL/FST offsets are stored right-shifted by 2 bits (`>> 2`). To get the actual offset, multiply by 4 (`<< 2`). This is what [`read_u64_shifted()`](../src/wiithon/helpers/Utils.py).
 
 
 > References: [WiiBrew – Wii Disc Header](https://wiibrew.org/wiki/Wii_disc#Header) / [Decrypted header](https://wiibrew.org/wiki/Wii_disc#Decrypted)
 >
-> In code: [DiscHeader.py](../src/structs/DiscHeader.py)
+> In code: [DiscHeader.py](../src/wiithon/structs/DiscHeader.py)
 ---
 
 ## Partition Table (`0x40000`)
 
 > [WiiBrew – Partitions Information](https://wiibrew.org/wiki/Wii_disc#Partitions_information)
 >
-> [WiiPartitionEntry.py](../src/structs/WiiPartitionEntry.py)
+> [WiiPartitionEntry.py](../src/wiithon/structs/WiiPartitionEntry.py)
 
 The partition table is always at the fixed offset `0x40000`. It defines 4 partition groups, each consisting of:
 
@@ -71,7 +71,7 @@ The **UPDATE** partition holds system update.
 The **CHANNEL** partition holds when game have channels like wii fit, Mario Kart.
 
 Super Smash Bros Brawl has a lot of partitions. Each one for the virtual game
-The partition types are defined in [Enums.py](../src/helpers/Enums.py) as `WiiPartType`.
+The partition types are defined in [Enums.py](../src/wiithon/helpers/Enums.py) as `WiiPartType`.
 
 ---
 
@@ -99,7 +99,7 @@ Here is the content of a Partition Header
 
 > Reference: [WiiBrew – Partition](https://wiibrew.org/wiki/Wii_disc#Partition)
 >
-> In code: [WiiPartitionHeader.py](../src/structs/WiiPartitionHeader.py)
+> In code: [WiiPartitionHeader.py](../src/wiithon/structs/WiiPartitionHeader.py)
 
 ---
 
@@ -119,7 +119,7 @@ This is used in cryptography as an initial state (sometimes is random, sometimes
 
 > Reference: [WiiBrew – Ticket](https://wiibrew.org/wiki/Ticket)
 >
-> In code: [Ticket.py](../src/structs/Ticket.py)
+> In code: [Ticket.py](../src/wiithon/structs/Ticket.py)
 
 ---
 
@@ -171,8 +171,8 @@ Each CMD has this structre:
 > Reference: [WiiBrew – Title Metadata](https://wiibrew.org/wiki/Title_metadata)
 > 
 > In code: 
-> - [TMD.py](../src/structs/TMD.py)
-> - [TMDContent.py (CMD)](../src/structs/TMDContent.py)
+> - [TMD.py](../src/wiithon/structs/TMD.py)
+> - [TMDContent.py (CMD)](../src/wiithon/structs/TMDContent.py)
 
 ---
 
@@ -229,7 +229,7 @@ Partition data is encrypted with AES-128-CBC using the title key. The layout is:
 
 > Reference: [WiiBrew - Wii Disc - Encrytped](https://wiibrew.org/wiki/Wii_disc#Encrypted)
 > 
-> Code: [CryptPartReader.py](../src/crypto/CryptPartReader.py)
+> Code: [CryptPartReader.py](../src/wiithon/crypto/CryptPartReader.py)
 
 ### Encryption and hashing processes
 This part is quite difficult.
@@ -246,8 +246,8 @@ Since the algorithm is pretty hard to understand, here a good sequence diagram:
 > Reference: [WiiBrew - Wii Disc - Encrytped](https://wiibrew.org/wiki/Wii_disc#Encrypted)
 > 
 > Code: 
-> - [CryptPartWriter.py](../src/crypto/CryptPartWriter.py)
-> - [Utils - encrypt_group function ](../src/helpers/Utils.py)
+> - [CryptPartWriter.py](../src/wiithon/crypto/CryptPartWriter.py)
+> - [Utils - encrypt_group function ](../src/wiithon/helpers/Utils.py)
 ---
 ## References
 

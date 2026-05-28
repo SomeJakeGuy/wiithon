@@ -2,8 +2,7 @@ import struct
 import unittest
 from io import BytesIO
 
-from structs.WiiPartitionHeader import WiiPartitionHeader
-from structs.Ticket import Ticket
+from wiithon.structs.WiiPartitionHeader import WiiPartitionHeader
 
 
 class TestWiiPartitionHeader(unittest.TestCase):

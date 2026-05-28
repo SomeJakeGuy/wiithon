@@ -2,11 +2,11 @@ import os
 import unittest
 from io import BytesIO
 
-from crypto.CryptPartReader import CryptPartReader
-from crypto.CryptPartWriter import CryptPartWriter
-from helpers.Constants import GROUP_SIZE
-from structs.WiiPartitionEntry import read_parts
-from structs.WiiPartitionHeader import WiiPartitionHeader
+from wiithon.crypto.CryptPartReader import CryptPartReader
+from wiithon.crypto.CryptPartWriter import CryptPartWriter
+from wiithon.helpers.Constants import GROUP_SIZE
+from wiithon.structs.WiiPartitionEntry import read_parts
+from wiithon.structs.WiiPartitionHeader import WiiPartitionHeader
 
 TEST_ISO_PATH = os.path.join(os.path.dirname(__file__), "..", "assets", "smg.iso")
 

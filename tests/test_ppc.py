@@ -1,16 +1,11 @@
 import unittest
 import struct
 
-from helpers.PowerPC import (
-    b, bl, ba, bla,
-    cntlzw,
-    li, lis, addi, addis,
-    lwz, stw, lbz, stb, lhz, sth,
+from wiithon.helpers.PowerPC import (
+    b, bl, cntlzw,
+    li, lis, addi, lwz, stw, lbz, stb, lhz, sth,
     ori, nop,
-    add, subf,
-    or_, mr,
-    mflr, mtlr, mfctr, mtctr,
-    mfspr, mtspr, lfs, mulli, oris, rlwnm, stfs, andi, and_, blr,
+    add, or_, mtspr, lfs, mulli, oris, rlwnm, stfs, andi, and_, blr,
 )
 
 

@@ -2,7 +2,7 @@ import struct
 import unittest
 from io import BytesIO
 
-from structs.TMDContent import TMDContent
+from wiithon.structs.TMDContent import TMDContent
 
 class TestTMDContent(unittest.TestCase):
     """Unit tests for TMDContent."""
