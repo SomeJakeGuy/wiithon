@@ -90,6 +90,7 @@ with WiiIsoReader(SOURCE_PATH) as reader:
 - [x] Wrapper for modifying rarc file
 ---
 ### Next to do
+- [ ] Searching empty addresses in dol to add instructions and adding text/data sections
 - [ ] Refactor/adding constants to avoid magic numbers
 - [ ] Comment all functions (and inside of it)
 - [ ] BCSV editor

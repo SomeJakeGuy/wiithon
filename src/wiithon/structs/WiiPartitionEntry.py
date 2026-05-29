@@ -28,6 +28,18 @@ class WiiPartitionEntry:
     def __repr__(self):
         return f"WiiPartitionEntry(Offset: {self.offset:X}, Partition_type: {self.part_type})"
 
+    def get_readable_part_type(self) -> str:
+        match self.part_type:
+            case 0:
+                return "data"
+            case 1:
+                return "update"
+            case 2:
+                return "channel"
+            case _:
+                raise ValueError("Invalid partition type")
+
+
 def read_parts(stream: BinaryIO) -> list[WiiPartitionEntry]:
     """
     Read the partition table from a Wii disc.

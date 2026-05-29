@@ -1,5 +1,6 @@
 from io import BytesIO
 from typing import BinaryIO
+import struct
 
 from wiithon.structs.DOLHeader import DOLHeader
 
@@ -13,6 +14,7 @@ class DOL:
         self.header: DOLHeader = DOLHeader()
         self.text_sections: list[bytes] = [b''] * TEXT_SECTIONS
         self.data_sections: list[bytes] = [b''] * DATA_SECTIONS
+
 
     @classmethod
     def read(cls, stream: BinaryIO) -> "DOL":
@@ -125,6 +127,43 @@ class DOL:
                 out.write(b'\x00' * padding)
 
         return out.getvalue()
+
+
+    def find_code_caves(self, min_size: int = 0x40) -> list[tuple[str, int, int]]:
+        results = []
+
+        all_sections = (
+                [(f"text[{i}]", self.text_sections[i], self.header.text_starts[i], self.header.text_length[i])
+                 for i in range(TEXT_SECTIONS)]
+                + [(f"data[{i}]", self.data_sections[i], self.header.data_starts[i], self.header.data_length[i])
+                   for i in range(DATA_SECTIONS)]
+        )
+
+        for name, section, virtual_start, virtual_length in all_sections:
+            if virtual_length == 0:
+                continue
+
+            cave_start = None
+            cave_size = 0
+
+            for offset in range(0, len(section) - 3, 4):
+                word = struct.unpack_from(">I", section, offset)[0]
+
+                if word in (0x60000000, 0x00000000): # NOP or nothing
+                    if cave_start is None:
+                        cave_start = offset
+                    cave_size += 4
+                else:
+                    if cave_start is not None and cave_size >= min_size:
+                        results.append((name, virtual_start + cave_start, cave_size))
+                    cave_start = None
+                    cave_size = 0
+
+            if cave_start is not None and cave_size >= min_size:
+                results.append((name, virtual_start + cave_start, cave_size))
+
+        results.sort(key=lambda x: x[1])
+        return results
 
 
 def _align4(size: int) -> int:
