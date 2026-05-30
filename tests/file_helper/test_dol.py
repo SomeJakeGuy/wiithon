@@ -1,7 +1,7 @@
 import unittest
 from io import BytesIO
 
-from wiithon.file_helper.dol import DOL, HEADER_SIZE
+from wiithon.file_helper.dol import DOL, HEADER_SIZE, DATA_SECTIONS, TEXT_SECTIONS
 from wiithon.structs.DOLHeader import DOLHeader
 
 
@@ -133,6 +133,83 @@ class TestDOLToBytes(unittest.TestCase):
         rebuilt = dol.to_bytes()
         dol2 = DOL.read(BytesIO(rebuilt))
         self.assertEqual(dol2.header.text_offset[0], HEADER_SIZE)
+
+class TestAddTextSection(unittest.TestCase):
+
+    def setUp(self):
+        raw = build_mock_dol(b'\x60\x00\x00\x00' * 4, text_start=0x80004000)
+        self.dol = DOL.read(BytesIO(raw))
+        self.inject_addr = 0x806AE000
+        self.inject_data = b'\x38\x60\x00\x2A' * 4  # li r3, 42 x4
+
+    def test_uses_first_free_slot(self):
+        self.dol.add_text_section(self.inject_addr, self.inject_data)
+        self.assertEqual(self.dol.text_sections[1], self.inject_data)
+
+    def test_sets_virtual_address(self):
+        self.dol.add_text_section(self.inject_addr, self.inject_data)
+        self.assertEqual(self.dol.header.text_starts[1], self.inject_addr)
+
+    def test_sets_length(self):
+        self.dol.add_text_section(self.inject_addr, self.inject_data)
+        self.assertEqual(self.dol.header.text_length[1], len(self.inject_data))
+
+    def test_readable_via_read_at(self):
+        self.dol.add_text_section(self.inject_addr, self.inject_data)
+        result = self.dol.read_at(self.inject_addr, 4)
+        self.assertEqual(result, b'\x38\x60\x00\x2A')
+
+    def test_roundtrip_after_add(self):
+        self.dol.add_text_section(self.inject_addr, self.inject_data)
+        rebuilt = DOL.read(BytesIO(self.dol.to_bytes()))
+        self.assertEqual(rebuilt.read_at(self.inject_addr, len(self.inject_data)), self.inject_data)
+
+    def test_does_not_affect_existing_section(self):
+        self.dol.add_text_section(self.inject_addr, self.inject_data)
+        self.assertEqual(self.dol.read_at(0x80004000, 4), b'\x60\x00\x00\x00')
+
+    def test_raises_when_all_slots_used(self):
+        for i in range(TEXT_SECTIONS - 1):
+            self.dol.add_text_section(0x80700000 + i * 0x1000, b'\x60\x00\x00\x00' * 4)
+        with self.assertRaises(RuntimeError):
+            self.dol.add_text_section(0x80800000, b'\x60\x00\x00\x00' * 4)
+
+
+class TestAddDataSection(unittest.TestCase):
+
+    def setUp(self):
+        raw = build_mock_dol(b'\x60\x00\x00\x00' * 4, text_start=0x80004000)
+        self.dol = DOL.read(BytesIO(raw))
+        self.inject_addr = 0x806AE000
+        self.inject_data = b'\xDE\xAD\xBE\xEF' * 4
+
+    def test_uses_first_free_slot(self):
+        self.dol.add_data_section(self.inject_addr, self.inject_data)
+        self.assertEqual(self.dol.data_sections[0], self.inject_data)
+
+    def test_sets_virtual_address(self):
+        self.dol.add_data_section(self.inject_addr, self.inject_data)
+        self.assertEqual(self.dol.header.data_starts[0], self.inject_addr)
+
+    def test_sets_length(self):
+        self.dol.add_data_section(self.inject_addr, self.inject_data)
+        self.assertEqual(self.dol.header.data_length[0], len(self.inject_data))
+
+    def test_readable_via_read_at(self):
+        self.dol.add_data_section(self.inject_addr, self.inject_data)
+        result = self.dol.read_at(self.inject_addr, 4)
+        self.assertEqual(result, b'\xDE\xAD\xBE\xEF')
+
+    def test_roundtrip_after_add(self):
+        self.dol.add_data_section(self.inject_addr, self.inject_data)
+        rebuilt = DOL.read(BytesIO(self.dol.to_bytes()))
+        self.assertEqual(rebuilt.read_at(self.inject_addr, len(self.inject_data)), self.inject_data)
+
+    def test_raises_when_all_slots_used(self):
+        for i in range(DATA_SECTIONS):
+            self.dol.add_data_section(0x80700000 + i * 0x1000, b'\x00' * 4)
+        with self.assertRaises(RuntimeError):
+            self.dol.add_data_section(0x80800000, b'\x00' * 4)
 
 
 if __name__ == '__main__':

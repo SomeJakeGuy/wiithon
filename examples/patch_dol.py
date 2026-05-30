@@ -13,6 +13,9 @@ PATCH_ADDR_LI    = 0x80258a10
 PATCH_ADDR_BL_FROM   = 0x80258a14
 PATCH_ADDR_BL_TARGET = 0x80f58a14
 
+CODE_VADDR = 0x806E0000
+DATA_VADDR = 0x806F0000
+DATA_SIZE  = 0x100
 
 def apply_patches(dol: DOL) -> None:
     """All patches go here. Used for both the standalone DOL and the ISO DOL"""
@@ -28,6 +31,21 @@ def apply_patches(dol: DOL) -> None:
     # Patch 3: redirect a bl
     dol.write_at(PATCH_ADDR_BL_FROM, ppc.bl(PATCH_ADDR_BL_TARGET, PATCH_ADDR_BL_FROM))
     print(f"  bl {PATCH_ADDR_BL_TARGET:#010x} @ {PATCH_ADDR_BL_FROM:#010x}")
+
+    dol.add_data_section(DATA_VADDR, b'\x00' * DATA_SIZE)
+
+    hook_addr = 0x802e1860
+    original = dol.read_at(hook_addr, 4)
+
+    code = (
+            original  # original instruction
+            + ppc.li(3, 42)  # some logics
+            + ppc.b(hook_addr + 4, CODE_VADDR + 8)  # return
+    )
+    dol.add_text_section(CODE_VADDR, code)
+
+    # Branch when hooked
+    dol.write_at(hook_addr, ppc.b(CODE_VADDR, hook_addr))
 
 
 # A .dol file

@@ -15,6 +15,8 @@ class DOL:
         self.text_sections: list[bytes] = [b''] * TEXT_SECTIONS
         self.data_sections: list[bytes] = [b''] * DATA_SECTIONS
 
+    def __repr__(self):
+        return f'Header: {{ \n  {repr(self.header)} \n }}'
 
     @classmethod
     def read(cls, stream: BinaryIO) -> "DOL":
@@ -128,6 +130,31 @@ class DOL:
 
         return out.getvalue()
 
+    def add_text_section(self, virtual_addr: int, data: bytes) -> None:
+        if self._is_safe(virtual_addr, len(data)):
+            for i in range(TEXT_SECTIONS):
+                if self.header.text_length[i] == 0:
+                    self.text_sections[i] = data
+                    self.header.text_length[i] = len(data)
+                    self.header.text_starts[i] = virtual_addr
+                    return
+        else:
+            raise RuntimeError(f"Virtual address {virtual_addr:#010x} is already in a section")
+
+        raise RuntimeError(f"No free text section slot (all {TEXT_SECTIONS} used)")
+
+    def add_data_section(self, virtual_addr: int, data: bytes) -> None:
+        if self._is_safe(virtual_addr, len(data)):
+            for i in range(DATA_SECTIONS):
+                if self.header.data_length[i] == 0:
+                    self.data_sections[i] = data
+                    self.header.data_length[i] = len(data)
+                    self.header.data_starts[i] = virtual_addr
+                    return
+        else:
+            raise RuntimeError(f"Virtual address {virtual_addr:#010x} is already in a section")
+
+        raise RuntimeError(f"No free data section slot (all {DATA_SECTIONS} used)")
 
     def find_code_caves(self, min_size: int = 0x40) -> list[tuple[str, int, int]]:
         results = []
@@ -165,6 +192,22 @@ class DOL:
         results.sort(key=lambda x: x[1])
         return results
 
+    def _is_safe(self, virtual_addr, size):
+        for starts, lengths in [
+            (self.header.text_starts, self.header.text_length),
+            (self.header.data_starts, self.header.data_length),
+        ]:
+            for start, length in zip(starts, lengths):
+                if length == 0:
+                    continue
+                if start < virtual_addr + size and virtual_addr < start + length:
+                    return False
+
+
+        bss_end = self.header.bss_start + self.header.bss_size
+        if self.header.bss_start < virtual_addr + size and virtual_addr < bss_end:
+            print(f"Warning: {virtual_addr:08X} is in  BSS")
+        return True
 
 def _align4(size: int) -> int:
     return (size + 3) & ~3
