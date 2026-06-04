@@ -204,6 +204,7 @@ class TestAddDataSection(unittest.TestCase):
         self.dol.add_data_section(self.inject_addr, self.inject_data)
         rebuilt = DOL.read(BytesIO(self.dol.to_bytes()))
         self.assertEqual(rebuilt.read_at(self.inject_addr, len(self.inject_data)), self.inject_data)
+        self.assertEqual(self.dol.header.data_length[0], 4 * 0x4)
 
     def test_raises_when_all_slots_used(self):
         for i in range(DATA_SECTIONS):

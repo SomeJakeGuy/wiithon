@@ -3,3 +3,5 @@
 *.arc
 
 /src_dir/
+/assets
+/extract

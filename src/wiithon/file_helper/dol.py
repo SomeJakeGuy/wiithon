@@ -3,6 +3,7 @@ from typing import BinaryIO
 import struct
 
 from wiithon.structs.DOLHeader import DOLHeader
+from wiithon.helpers import PowerPC as ppc
 
 TEXT_SECTIONS = 7
 DATA_SECTIONS = 11
@@ -59,6 +60,20 @@ class DOL:
                 return ('data', i, virtual_addr - start)
 
         raise ValueError(f"Virtual address {virtual_addr:#010x} not found in any DOL section")
+
+    def has_free_text_section(self) -> bool:
+        for i in range(TEXT_SECTIONS):
+            if self.header.text_length[i] == 0:
+                return True
+
+        return False
+
+    def has_free_data_section(self) -> bool:
+        for i in range(DATA_SECTIONS):
+            if self.header.data_length[i] == 0:
+                return True
+
+        return False
 
     def read_at(self, virtual_addr: int, size: int) -> bytes:
         stype, i, offset = self._virtual_to_section(virtual_addr)
@@ -155,6 +170,66 @@ class DOL:
             raise RuntimeError(f"Virtual address {virtual_addr:#010x} is already in a section")
 
         raise RuntimeError(f"No free data section slot (all {DATA_SECTIONS} used)")
+
+    def find_arena_lo_setter(self) -> int | None:
+        """
+        Finds the 'lis r3' address in the arenaLo setup sequence.
+        Pattern (found empirically across multiple Wii games):
+          lis r3, X        (3c 60 ?? ??)
+          addi r3, r3, Y   (38 63 ?? ??)
+          addi r0, r3, 31  (38 03 ?? ??)
+          rlwinm r3, r0, ? (54 03 ?? ??)
+        Returns the virtual address of the lis, or None if not found.
+        """
+        checks = [(0, b'\x3c\x60'), (4, b'\x38\x63'), (8, b'\x38\x03'), (12, b'\x54\x03')]
+
+        for i in range(TEXT_SECTIONS):
+            if self.header.text_length[i] == 0:
+                continue
+            base = self.header.text_starts[i]
+            data = self.text_sections[i]
+            for off in range(0, len(data) - 16, 4):
+                if all(data[off + o:off + o + 2] == e for o, e in checks):
+                    return base + off
+
+        raise RuntimeError(f"No arenaLo is found. Consider passing through the argument and manual searching.")
+
+    def read_arena_lo(self, lis_vaddr: int) -> int:
+        """Decodes the arenaLo value from a lis+addi/ori pair at lis_vaddr."""
+        w0, w1 = struct.unpack(">II", self.read_at(lis_vaddr, 8))
+        hi     = w0 & 0xFFFF
+        lo_raw = w1 & 0xFFFF
+        lo     = (lo_raw - 0x10000) if ((w1 >> 26) == 14 and lo_raw >= 0x8000) else lo_raw
+
+        return (hi << 16) + lo
+
+    def patch_arena_lo(self, lis_vaddr: int, new_value: int) -> None:
+        """Patches the lis+ori pair at lis_vaddr to load new_value into r3."""
+        hi = (new_value >> 16) & 0xFFFF
+        lo = new_value & 0xFFFF
+        self.write_at(lis_vaddr,     ppc.lis(3, hi))
+        self.write_at(lis_vaddr + 4, ppc.ori(3, 3, lo))
+
+    def inject_above_arena(self, sections: list[bytes], manual_arena: int = None, padding: int = 0x100) -> list[int]:
+        if manual_arena is None:
+            site = self.find_arena_lo_setter()
+        else:
+            site = manual_arena
+        base = self.read_arena_lo(site) + padding
+        addrs = []
+        cursor = (base + 31) & ~31
+        for data in sections:
+            if self.has_free_data_section():
+                self.add_text_section(cursor, data)
+            elif self.has_free_data_section():
+                self.add_data_section(cursor, data)
+            else:
+                raise RuntimeError("No free section found.")
+
+            addrs.append(cursor)
+            cursor = (cursor + len(data) + 31) & ~31
+        self.patch_arena_lo(site, cursor)
+        return addrs
 
     def find_code_caves(self, min_size: int = 0x40) -> list[tuple[str, int, int]]:
         results = []

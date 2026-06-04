@@ -206,7 +206,9 @@ def li(rD: int, imm: int) -> bytes:
 
 
 def lis(rD: int, imm: int) -> bytes:
-    """lis rD, imm  - load immediate shifted left 16"""
+    """lis rD, imm  - load immediate shifted left 16 (accepts signed or unsigned 16-bit)"""
+    if 0x8000 <= imm <= 0xFFFF:
+        imm -= 0x10000
     return _fmt_d(15, rD, 0, imm)
 
 

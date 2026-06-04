@@ -197,3 +197,6 @@ class WiiDiscBuilder:
 
         stream.seek(0x4E000)
         stream.write(self.region)
+
+        stream.seek(0x4FFFC)
+        stream.write(struct.pack(">I", 0xC3F81A8E))

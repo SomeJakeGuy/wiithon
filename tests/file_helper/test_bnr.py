@@ -3,7 +3,7 @@ import unittest
 from io import BytesIO
 
 from wiithon.file_helper.bnr import BNR
-from wiithon.structs.IMET import MAGIC, PADDING_SIZE, IMET_BLOCK_SIZE, TITLE_MAX_CHARS
+from wiithon.helpers.Constants import IMET_MAGIC_WORD, IMET_PADDING_SIZE, IMET_TITLE_MAX_BYTES, IMET_BLOCK_SIZE
 
 
 def _make_imet_bytes(
@@ -14,7 +14,7 @@ def _make_imet_bytes(
     content_offset: int = 0x600,
 ) -> bytes:
     block = bytearray(IMET_BLOCK_SIZE)
-    block[0:4] = MAGIC
+    block[0:4] = IMET_MAGIC_WORD
     struct.pack_into(">I", block, 0x04, content_offset)
     struct.pack_into(">I", block, 0x08, 3)
     struct.pack_into(">I", block, 0x0C, icon_size)
@@ -22,8 +22,8 @@ def _make_imet_bytes(
     struct.pack_into(">I", block, 0x14, sound_size)
 
     for i, title in enumerate(titles or []):
-        off = 0x1C + i * TITLE_MAX_CHARS * 2
-        encoded = title.encode("utf-16-be")[:TITLE_MAX_CHARS * 2]
+        off = 0x1C + i * IMET_TITLE_MAX_BYTES * 2
+        encoded = title.encode("utf-16-be")[:IMET_TITLE_MAX_BYTES * 2]
         block[off:off + len(encoded)] = encoded
 
     return bytes(block)
@@ -31,7 +31,7 @@ def _make_imet_bytes(
 
 def _make_bnr_bytes(titles: list[str] | None = None, inner: bytes = b"INNER") -> bytes:
     buf = BytesIO()
-    buf.write(b'\x00' * PADDING_SIZE)
+    buf.write(b'\x00' * IMET_PADDING_SIZE)
     buf.write(_make_imet_bytes(titles))
     buf.write(inner)
     return buf.getvalue()
