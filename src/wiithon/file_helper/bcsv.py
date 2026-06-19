@@ -8,6 +8,8 @@ BCSV_HEADER_SIZE: int = 0x10
 BCSV_FIELD_SIZE: int = 0xC
 BCSV_MAX_STRING_LENGTH: int = 0x20
 
+STRING_FORMAT = "utf-8"
+
 type BCSVKey = int | str | BCSVField
 type BCSVValue = int | str | float
 
@@ -27,7 +29,7 @@ def calculate_field_hash(field_name: str) -> int:
     """
     field_hash: int = 0
 
-    for ch in field_name.encode("ascii"):
+    for ch in field_name.encode(STRING_FORMAT):
         if ch == b"\x00":
             break
         ch = ch - 256 if ch >= 128 else ch
@@ -139,7 +141,7 @@ class BCSVField:
         return field_bytes.getvalue()
 
 
-    def get_value_from_bytes(self, entry_bytes: BytesIO, str_fmt: str = "ascii", error_handling: str = "strict") -> BCSVValue | None:
+    def get_value_from_bytes(self, entry_bytes: BytesIO, str_fmt: str = STRING_FORMAT, error_handling: str = "strict") -> BCSVValue | None:
         """
         Gets the field's value from a given BCSV entry's bytes.
         
@@ -174,7 +176,7 @@ class BCSVField:
         return (value & self.field_bitmask) >> self.field_shift
 
 
-    def set_value_in_buffer(self, entry_bytes: BytesIO, entry_value: BCSVValue, string_pool: list[StringPoolElement], str_fmt: str = "ascii"):
+    def set_value_in_buffer(self, entry_bytes: BytesIO, entry_value: BCSVValue, string_pool: list[StringPoolElement], str_fmt: str = STRING_FORMAT):
         """
         Sets the field's value into a given BCSV entry's bytes.
         
@@ -322,7 +324,7 @@ class BCSV:
 
 
     @classmethod
-    def import_bcsv(cls, raw_data: BytesIO, field_names: dict[int, str] = None, str_fmt: str = "ascii"):
+    def import_bcsv(cls, raw_data: BytesIO, field_names: dict[int, str] = None, str_fmt: str = STRING_FORMAT):
         """
         Takes an input stream of BCSV data and converts it into a BCSV object.
 
@@ -390,7 +392,7 @@ class BCSV:
         return bcsv
 
 
-    def export_bcsv(self, str_fmt: str = "ascii") -> BytesIO:
+    def export_bcsv(self, str_fmt: str = STRING_FORMAT) -> BytesIO:
         """
         Converts this object back into a file stream.
 
