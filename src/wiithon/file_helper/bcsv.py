@@ -455,7 +455,7 @@ class BCSV:
         curr_length = bcsv_data.seek(0, 2)
         if curr_length % 32 > 0:
             bcsv_data.seek(curr_length)
-            fh.write_str(bcsv_data, "", 32 - (curr_length % 32), curr_length, "@".encode(str_fmt), str_fmt=str_fmt)
+            fh.write_str(bcsv_data, "", 32 - (curr_length % 32), curr_length, b"@", str_fmt=str_fmt)
 
         return bcsv_data
 
