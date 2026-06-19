@@ -315,9 +315,13 @@ class BCSV:
 
         if fields is None:
             fields = []
+        elif isinstance(fields[0], BCSVField):
+            raise BCSVFileError(f"Fields provided is not of type 'BCSVField'.\nReceived field type: {type(fields[0])}")
 
         if entries is None:
             entries = []
+        elif isinstance(entries[0], BCSVEntry):
+            raise BCSVFileError(f"Entries provided is not of type 'BCSVEntry'.\nReceived field type: {type(fields[0])}")
 
         self.fields = fields
         self.entries = entries
