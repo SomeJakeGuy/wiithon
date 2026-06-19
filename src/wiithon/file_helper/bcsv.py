@@ -117,7 +117,7 @@ class BCSVField:
     @classmethod
     def import_field(cls, raw_bytes: BytesIO):
         """
-        Creates a given field/header from the raw BytesIO (should be size 0xC)
+        Creates a given field/header from the raw BytesIO (should be 12 bytes)
 
         Args:
             raw_bytes (BytesIO): Field bytes
