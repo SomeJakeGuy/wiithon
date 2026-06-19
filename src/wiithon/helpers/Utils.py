@@ -5,6 +5,8 @@ import hashlib
 import json
 from typing import Any
 
+STRING_FORMAT: str = "utf-8"
+
 class ByteHelperError(Exception):
     pass
 
@@ -205,7 +207,7 @@ def read_float(stream: BinaryIO, offset: int = None) -> float:
         stream.seek(offset)
     return struct.unpack(">f", stream.read(length))[0]
 
-def read_string(stream: BinaryIO, number_of_bytes: int, offset: int = None, str_fmt: str = "ascii", error_handling: str = "strict") -> str:
+def read_string(stream: BinaryIO, number_of_bytes: int, offset: int = None, str_fmt: str = STRING_FORMAT, error_handling: str = "strict") -> str:
     """
     Read a string of set size from a stream. Will automatically split on a null byte.
     
@@ -227,7 +229,7 @@ def read_string(stream: BinaryIO, number_of_bytes: int, offset: int = None, str_
     
     return stream.read(number_of_bytes).split(b'\x00')[0].decode(str_fmt, errors=error_handling)
 
-def read_string_until_null(stream: BinaryIO, offset: int, str_fmt: str = "ascii", error_handling: str = "strict") -> str:
+def read_string_until_null(stream: BinaryIO, offset: int, str_fmt: str = STRING_FORMAT, error_handling: str = "strict") -> str:
     """
     Read a string of until size is read or null byte is found from a stream
     
@@ -404,7 +406,7 @@ def write_float(stream: BinaryIO, new_value: float, offset: int = None):
     stream.write(new_bytes)
 
 def write_str(stream: BinaryIO, new_value: str, expected_size: int, padding_byte: bytes = b'\0',
-        offset: int = None, str_fmt: str = "ascii", add_null_byte: bool = False):
+        offset: int = None, str_fmt: str = STRING_FORMAT, add_null_byte: bool = False):
     """
     Writes a str to a stream
 
