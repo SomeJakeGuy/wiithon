@@ -370,23 +370,23 @@ class BCSV:
 
         offset: int = BCSV_HEADER_SIZE
         for _ in range(field_count):
-            field_bytes: BytesIO = BytesIO(fh.read_bytes(raw_data, offset, BCSV_FIELD_SIZE))
+            field_bytes: BytesIO = BytesIO(fh.read_bytes(raw_data, BCSV_FIELD_SIZE, offset))
             bcsv_field: BCSVField = BCSVField.import_field(field_bytes)
-            if bcsv_field.field_hash in field_names:
+            if bcsv_field.field_hash in field_names: # Replace hashes with field names if provided
                 bcsv_field.field_name = field_names[bcsv_field.field_hash]
             bcsv.fields.append(bcsv_field)
             offset += BCSV_FIELD_SIZE
 
         # Read everything after the calculated data size until the end of the BCSV byte data.
-        string_table_bytes: BytesIO = BytesIO(fh.read_bytes(raw_data, calc_data_size))
+        string_table_bytes: BytesIO = BytesIO(fh.read_bytes(raw_data, -1, calc_data_size))
 
         offset = entry_data_offset
         for _ in range(entry_count):
             bcsv_entry: BCSVEntry = BCSVEntry()
-            entry_bytes: BytesIO = BytesIO(fh.read_bytes(raw_data, offset, entry_size_bytes))
+            entry_bytes: BytesIO = BytesIO(fh.read_bytes(raw_data, entry_size_bytes, offset))
 
             for bcsv_field in bcsv.fields:
-                value: BCSVValue = bcsv_field.get_value_from_bytes(entry_bytes)
+                value: BCSVValue = bcsv_field.get_value_from_bytes(entry_bytes, str_fmt)
                 if bcsv_field.field_type == BCSVType.STRING_OFFSET:
                     value = fh.read_string_until_null(string_table_bytes, value, str_fmt=str_fmt) # Read until a null byte is hit
                 bcsv_entry[bcsv_field] = value
@@ -455,7 +455,7 @@ class BCSV:
         curr_length = bcsv_data.seek(0, 2)
         if curr_length % 32 > 0:
             bcsv_data.seek(curr_length)
-            fh.write_str(bcsv_data, "", 32 - (curr_length % 32), curr_length, b"@", str_fmt=str_fmt)
+            fh.write_str(bcsv_data, "", 32 - (curr_length % 32), b"@", curr_length, str_fmt=str_fmt)
 
         return bcsv_data
 
