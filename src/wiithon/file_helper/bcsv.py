@@ -169,7 +169,7 @@ class BCSVField:
             case BCSVType.STRING_OFFSET:
                 return fh.read_u32(entry_bytes, self.field_offset)
             case BCSVType.STRING:
-                return fh.read_string(entry_bytes, self.field_offset, BCSV_MAX_STRING_LENGTH, str_fmt, error_handling)
+                return fh.read_string(entry_bytes, BCSV_MAX_STRING_LENGTH, self.field_offset, str_fmt, error_handling)
             case _:
                 raise TypeError(f"Unsupported BCSV Field type: {self.field_type}")
 
