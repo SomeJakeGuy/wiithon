@@ -372,7 +372,7 @@ class BCSV:
         for _ in range(field_count):
             field_bytes: BytesIO = BytesIO(fh.read_bytes(raw_data, BCSV_FIELD_SIZE, offset))
             bcsv_field: BCSVField = BCSVField.import_field(field_bytes)
-            if bcsv_field.field_hash in field_names: # Replace hashes with field names if provided
+            if bcsv_field.field_hash in BCSVEntry.hash_names: # Replace hashes with field names if provided
                 bcsv_field.field_name = field_names[bcsv_field.field_hash]
             bcsv.fields.append(bcsv_field)
             offset += BCSV_FIELD_SIZE
