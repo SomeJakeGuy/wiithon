@@ -502,12 +502,12 @@ class BCSV:
             raise TypeError(f"Field provided is not of type '{type(BCSVKey)}.' Field Provided: {type(key)}")
 
         if field_found is None:
-            raise ValueError(f"No BCSVField was with key: {key}")
+            raise ValueError(f"No BCSVField was found with key: {key}")
 
         for entry in self.entries:
             del entry[key]
 
-        self.fields.remove(key)
+        self.fields.remove(field_found)
 
     def add_bcsv_entry(self, bcsv_entry: BCSVEntry):
         """
