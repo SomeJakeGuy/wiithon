@@ -36,7 +36,7 @@ def read_u64(stream: BinaryIO, offset: int = None) -> int:
     """
     length = 8
     if not offset is None:
-        data_length = stream.seek(offset, 2)
+        data_length = stream.seek(0, 2)
         if offset + length > data_length:
             raise ByteHelperError(f"Offset {offset} + Length {length} is longer than the data size {data_length}.")
         stream.seek(offset)
@@ -55,7 +55,7 @@ def read_u32(stream: BinaryIO, offset: int = None) -> int:
     """
     length = 4
     if not offset is None:
-        data_length = stream.seek(offset, 2)
+        data_length = stream.seek(0, 2)
         if offset + length > data_length:
             raise ByteHelperError(f"Offset {offset} + Length {length} is longer than the data size {data_length}.")
         stream.seek(offset)
@@ -87,7 +87,7 @@ def read_u16(stream: BinaryIO, offset: int = None) -> int:
     """
     length = 2
     if not offset is None:
-        data_length = stream.seek(offset, 2)
+        data_length = stream.seek(0, 2)
         if offset + length > data_length:
             raise ByteHelperError(f"Offset {offset} + Length {length} is longer than the data size {data_length}.")
         stream.seek(offset)
@@ -106,7 +106,7 @@ def read_u8(stream: BinaryIO, offset: int = None) -> int:
     """
     length = 1
     if not offset is None:
-        data_length = stream.seek(offset, 2)
+        data_length = stream.seek(0, 2)
         if offset + length > data_length:
             raise ByteHelperError(f"Offset {offset} + Length {length} is longer than the data size {data_length}.")
         stream.seek(offset)
@@ -125,7 +125,7 @@ def read_s64(stream: BinaryIO, offset: int = None) -> int:
     """
     length = 8
     if not offset is None:
-        data_length = stream.seek(offset, 2)
+        data_length = stream.seek(0, 2)
         if offset + length > data_length:
             raise ByteHelperError(f"Offset {offset} + Length {length} is longer than the data size {data_length}.")
         stream.seek(offset)
@@ -144,7 +144,7 @@ def read_s32(stream: BinaryIO, offset: int) -> int:
     """
     length = 4
     if not offset is None:
-        data_length = stream.seek(offset, 2)
+        data_length = stream.seek(0, 2)
         if offset + length > data_length:
             raise ByteHelperError(f"Offset {offset} + Length {length} is longer than the data size {data_length}.")
         stream.seek(offset)
@@ -163,7 +163,7 @@ def read_s16(stream: BinaryIO, offset: int) -> int:
     """
     length = 2
     if not offset is None:
-        data_length = stream.seek(offset, 2)
+        data_length = stream.seek(0, 2)
         if offset + length > data_length:
             raise ByteHelperError(f"Offset {offset} + Length {length} is longer than the data size {data_length}.")
         stream.seek(offset)
@@ -182,7 +182,7 @@ def read_s8(stream: BinaryIO, offset: int = None) -> int:
     """
     length = 1
     if not offset is None:
-        data_length = stream.seek(offset, 2)
+        data_length = stream.seek(0, 2)
         if offset + length > data_length:
             raise ByteHelperError(f"Offset {offset} + Length {length} is longer than the data size {data_length}.")
         stream.seek(offset)
@@ -201,7 +201,7 @@ def read_float(stream: BinaryIO, offset: int = None) -> float:
     """
     length = 4
     if not offset is None:
-        data_length = stream.seek(offset, 2)
+        data_length = stream.seek(0, 2)
         if offset + length > data_length:
             raise ByteHelperError(f"Offset {offset} + Length {length} is longer than the data size {data_length}.")
         stream.seek(offset)
@@ -222,7 +222,7 @@ def read_string(stream: BinaryIO, number_of_bytes: int, offset: int = None, str_
         str: decoded string
     """
     if not offset is None:
-        data_length = stream.seek(offset, 2)
+        data_length = stream.seek(0, 2)
         if offset + number_of_bytes > data_length:
             raise ByteHelperError(f"Offset {offset} + Length {number_of_bytes} is longer than the data size {data_length}.")
         stream.seek(offset)
@@ -268,7 +268,7 @@ def read_bytes(stream: BinaryIO, size: int = -1, offset: int = None) -> bytes:
         bytes: bytes object
     """
     if not offset is None:
-        data_length = stream.seek(offset, 2)
+        data_length = stream.seek(0, 2)
         if offset + size > data_length:
             raise ByteHelperError(f"Offset {offset} + Size {size} is longer than the data size {data_length}.")
         stream.seek(offset)
